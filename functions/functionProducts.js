@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from 'fs';
 class ProductManager {
   constructor(ruta) {
     this.path = ruta;
@@ -13,16 +13,7 @@ class ProductManager {
     }
   }
 
-  async addProduct(
-    title,
-    description,
-    code,
-    price,
-    status,
-    stock,
-    category,
-    thumbnail
-  ) {
+  async addProduct(title,description,code,price,status,stock,category,thumbnail) {
     let products = await this.getProduct();
     let id = 1;
     if (products.length > 0) {
@@ -31,17 +22,18 @@ class ProductManager {
 
     //miramos si hay repetidos con el metodo some(true/false)
     let repeat = products.some((product) => product.id === id);
-
+    const regex = /\d/;
+    const titleValidation= !regex.test(title);
+    const descriptionValidation= !regex.test(description);
+    if(descriptionValidation==false || titleValidation==false){
+      return { status: 400, error: "Campo de titulo o descripcion contienen numeros" };
+    }
+   
     if (!title || !description || !price || stock === undefined) {
-      console.log(
-        `el producto no se pudo crear debido a que faltaron rellenar algunos campos`
-      );
-
-      return;
+      return { status: 400, error: "Campos obligatorios faltantes o incorrectos" };
     }
     if (repeat) {
-      console.log(`El código ${id} ya existe en la lista.`);
-      return;
+      return { status: 400, error: "Hubo un error, se repitio ID"  };
     }
     const product = {
       id,
@@ -56,6 +48,7 @@ class ProductManager {
     };
     products.push(product);
     fs.writeFileSync(this.path, JSON.stringify(products, null, "\t"));
+    return { status: 201, message:"peticion realizada con exito"  };
   }
 
   async getProductById(idBuscar) {
@@ -64,7 +57,6 @@ class ProductManager {
     let foundProduct = products.find((product) => product.id === idBuscar);
     if (foundProduct) {
       console.log(`producto con ID ${idBuscar} encontrado con exito`);
-      console.log(foundProduct);
       return foundProduct;
     } else {
       console.log(`Producto con ID ${idBuscar} no encontrado.`);
@@ -89,7 +81,7 @@ class ProductManager {
         "status",
         "stock",
         "category",
-        "thumbnails",
+        "thumbnail",
       ];
       let propiedadesQueLlegan = Object.keys(nuevasPropiedades);
       let valido = propiedadesQueLlegan.every((propiedades) =>
@@ -106,8 +98,7 @@ class ProductManager {
       };
       products[productIndex] = productoModificado;
       fs.writeFileSync(this.path, JSON.stringify(products, null, "\t"));
-      console.log("Actualizado con exito");
-      console.log(product);
+
       return true;
     } else {
       return "no se encontro el producto";
@@ -116,15 +107,15 @@ class ProductManager {
   async deletProduct(id) {
     let products = await this.getProduct();
     let verificacion = await this.getProductById(id);
-    if (!verificacion) {
-      return { status: 400, message: "No se encuentra el id ingresado" };
+    if (verificacion==false) {
+      return { status: 404, message: "No se encuentra el id ingresado" };
     }
 
     //si ibjeto.id es diferente a id se incluira en el nuevo array ese objeto
     products = products.filter((objeto) => objeto.id !== id);
     fs.writeFileSync(this.path, JSON.stringify(products, null, "\t"));
-    return { status: 200, message: "Eliminado con éxito" };
+    return { status: 201, message: "Eliminado con éxito" };
   }
 }
 
-module.exports = ProductManager;
+export default ProductManager;

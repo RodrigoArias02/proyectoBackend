@@ -1,9 +1,14 @@
-const { Router } = require("express");
-const path = require("path");
-const fs = require("fs");
-const CartManager = require("../functions/functionCart");
+import { Router } from 'express';
+import CartManager from '../functions/functionCart.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-let ruta = path.join(__dirname, "..", "archives", "carts.json");
+// Obtén la ruta del archivo actual
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+let ruta = join(__dirname, "..", "archives", "products.json");
+
 
 const router = Router();
 
@@ -70,4 +75,4 @@ router.post("/:cid/product/:pid", async (req, res) => {
   }
   return res.status(201).json(validacion);
 });
-module.exports = router;
+export default router;

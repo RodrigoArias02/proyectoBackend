@@ -1,0 +1,47 @@
+<h1>Productos con WebSocket</h1>
+<a href="/"><h3>Volver al inicio</h3></a>
+<h2>Ingresar nuevo producto</h2>
+<form id="miFormulario">
+  <input type="text" name="title" placeholder="Titulo" />
+  <input type="text" name="description" placeholder="Descripcion" />
+  <input type="number" name="code" placeholder="code" />
+  <input type="number" name="price" placeholder="price" />
+  <select name="status" id="">
+    <option value="true">true</option>
+    <option value="false">false</option>
+  </select>
+  <input type="number" name="stock" placeholder="stock" />
+  <select name="category" id="">
+    <option value="Comida">Comida</option>
+    <option value="Electrodomesticos">Electrodomesticos</option>
+  </select>
+  <input type="text" name="url" placeholder="UrlImagenPrueba" />
+  <button type="button" id="btn" onclick="enviarFormulario()">Enviar</button>
+</form>
+<form action="">
+  <h2>Eliminar elemento</h2>
+  <input type="number" name="id" placeholder="Id">
+  <button type="button" id="enviarId">Enviar</button>
+</form>
+
+
+
+
+<h3>Productos</h3>
+
+<div id="productContainer">
+  {{#each productos}}
+    <div>
+        <p><b>id:</b>{{this.id}}</p>
+        <p><b>Titulo: </b>{{this.title}}</p>
+        <p>${{this.price}}</p>
+        <p><b>Descripcion: </b>{{this.description}}</p>
+        <p><b>Stock: </b>{{this.stock}}</p>
+        <p><b>Category: </b>{{category}}</p>
+    </div>
+    <hr>
+  {{/each}}
+</div>
+
+<script src="socket.io/socket.io.js"></script>
+<script src="js/getProducts.js"></script>

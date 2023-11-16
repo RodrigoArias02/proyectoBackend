@@ -1,0 +1,10 @@
+<h1>inicio</h1>
+<a href="/realtimeproducts"><h4>Agregar o eliminar productos</h4></a>
+
+<h3>Productos sin websocket</h3>
+{{#each productos}}
+<div>
+    <h4>{{this.title}}</h4>
+    <p>${{this.price}}</p>
+</div>
+{{/each}}

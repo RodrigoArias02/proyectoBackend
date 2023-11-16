@@ -1,6 +1,6 @@
-const fs = require("fs");
-const ProductManager = require("./functionProducts");
-const path = require("path");
+import fs from 'fs'
+import ProductManager from "./functionProducts.js";
+import path from 'path';
 
 
 class CartManager {
@@ -103,4 +103,4 @@ class CartManager {
   }
 }
 
-module.exports = CartManager;
+export default CartManager;

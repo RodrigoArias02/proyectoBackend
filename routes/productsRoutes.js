@@ -1,9 +1,15 @@
-const { Router } = require("express");
-const ProductManager = require("../functions/functionProducts");
-const path = require("path");
-const fs = require("fs");
+import { Router } from "express";
+import ProductManager from "../functions/functionProducts.js";
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-let ruta = path.join(__dirname, "..", "archives", "products.json");
+// Obtén la ruta del archivo actual
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+let ruta = join(__dirname, "..", "archives", "products.json");
+
+
 const router = Router();
 
 let productManager = new ProductManager(ruta);
@@ -21,8 +27,7 @@ router.get("/", (req, res) => {
   }
 
   // Envía la respuesta como JSON
-
-  return res.status(200).json({resultado});
+  return res.status(200).json(resultado);
 });
 
 // Ruta final de respuesta al cliente
@@ -50,7 +55,8 @@ router.get("/:pid", async (req, res) => {
 router.post("/", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const checkTypes = (value, type) => typeof value === type;
-  let {title, description, code, price, status=true, stock, category, thumbnails=[]}=req.body
+  let {title, description, code, price, status=true, stock, category, thumbnail}=req.body
+  thumbnail = Array.isArray(thumbnail) ? thumbnail : [];
   let OK =
   checkTypes(title, 'string') &&
   checkTypes(description, 'string') &&
@@ -59,11 +65,16 @@ router.post("/", async (req, res) => {
   checkTypes(status, 'boolean') &&
   checkTypes(stock, 'number') &&
   checkTypes(category, 'string') &&
-  Array.isArray(thumbnails)
-
+  Array.isArray(thumbnail)
   if(OK==true){
-    await productManager.addProduct(title,description,code,price,status,stock,category, thumbnails)
-    return res.status(201).json({OK});
+    const estado=await productManager.addProduct(title,description,code,price,status,stock,category, thumbnail)
+    console.log(estado)
+    if(estado.status=="201"){
+      return res.status(201).json(estado);
+    }else{
+      return res.status(estado.status).json(estado)
+    }
+  
    
   }else{
     return res.status(400).json({error:"el valor de algunos de los campos no es admitido"});
@@ -88,24 +99,18 @@ router.put("/:pid", async (req, res) => {
   }
 })
 
-router.delete("/:pid", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  let { pid } = req.params;
-  pid = parseInt(pid);
-  const resultado = productManager.deletProduct(pid);
-  //verifica su resultado es una promesa
-  if (resultado instanceof Promise) {
-    resultado
-      .then((estado) => {
-        return res.status(estado.status).json({ message: estado.message });
-      })
-      .catch((error) => {
-        return res.status(500).json({ error: "Ha ocurrido un error en el servidor" });
-      });
-  } else {
-    return res.status(resultado.status).json({ message: resultado.message });
+router.delete("/:pid", async (req, res) => {
+  try {
+    res.setHeader("Content-Type", "application/json");
+    let { pid } = req.params;
+    pid = parseInt(pid);
+    const resultado = await productManager.deletProduct(pid);
+    return res.status(resultado.status).json( resultado );
+  } catch (error) {
+    return res.status(500).json({ error: "Ha ocurrido un error en el servidor" });
   }
 });
 
 
-module.exports = router;
+
+export default router;
