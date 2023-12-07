@@ -9,12 +9,13 @@ function renderProducts(datos){
   datos.forEach(product => {
     html += `
       <div>
-        <p><b>id:</b>${product.id}</p>
+        <p><b>id:</b>${product._id}</p>
         <p><b>Titulo: </b>${product.title}</p>
         <p>$${product.price}</p>
         <p><b>Descripcion: </b>${product.description}</p>
         <p><b>Stock: </b>${product.stock}</p>
         <p><b>Category: </b>${product.category}</p>
+        <img src=${product.thumbnail} width="400px" alt="">
       </div>
       <hr/>
     `;
@@ -66,6 +67,7 @@ btnEnviarId.addEventListener('click', async ()=>{
       const data = await response.json();
       console.log(data)
       if(data.status==201){
+        alert("eliminado con exito")
         const nuevosProductos= await obtenerProductos()
         //emitimos el nuevo array al servidor
         socket.emit('ProductoEliminado', nuevosProductos);
@@ -112,11 +114,10 @@ async function enviarFormulario() {
   
       // Parsear la respuesta como JSON
       const data = await response.json();
-      console.log(data)
       if(data.status=="201"){
       // Obtener productos después de enviar el formulario
       const productos = await obtenerProductos();
-
+      alert(data.message)
       // Emitir productos al servidor
       socket.emit('producto', productos);
       }else{
@@ -135,6 +136,5 @@ socket.on("NuevoProducto", async datos=>{
 })
 socket.on("nuevoProductoEliminado", async datos=>{
   renderProducts(datos)
-    
 })
 

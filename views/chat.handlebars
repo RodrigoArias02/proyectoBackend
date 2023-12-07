@@ -1,0 +1,23 @@
+<h1>Chat con WebSocket y mongoDB</h1>
+<a href="/"><h3>Volver al inicio</h3></a>
+
+<h2>Chat:</h2>
+
+<div id="contenedorMensaje">
+    {{#each messages}}
+    <section >
+        <article><p><b>{{this.user}}: </b>{{this.message}}</p></article>
+        <article>{{formattedCreatedAt}}</article>
+    </section>
+    {{/each}}
+
+</div>
+<form>
+    <textarea name="message" id="" cols="30" rows="7" placeholder="Mensaje"></textarea>
+    <button type="button" id="btnForm">Enviar</button>
+</form>
+<script src="socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="js/chat.js"></script>
+
+

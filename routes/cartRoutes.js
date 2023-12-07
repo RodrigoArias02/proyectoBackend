@@ -1,27 +1,36 @@
 import { Router } from 'express';
-import CartManager from '../functions/functionCart.js';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import mongoose from 'mongoose';
+import { ManagerCartMongoDB } from '../dao/managerCartsMongo.js';
+import { ManagerProductsMongoDB } from '../dao/managerProductsMongo.js';
+// import CartManager from '../functions/functionCart.js';
+// import { fileURLToPath } from 'url';
+// import { dirname, join } from 'path';
 
-// Obtén la ruta del archivo actual
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// // Obtén la ruta del archivo actual
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
-let ruta = join(__dirname, "..", "archives", "products.json");
+// let ruta = join(__dirname, "..", "archives", "products.json");
 
 
 const router = Router();
 
-let cartManager = new CartManager(ruta);
-router.get("/",  (req, res) => {
-  productId = req.params.cid; // Obtén el id del producto de req.params
+// let cartManager = new CartManager(ruta);
+
+const manager = new ManagerCartMongoDB();
+const managerProduct = new ManagerProductsMongoDB();
+
+router.get("/",  async(req, res) => {
   res.setHeader("Content-Type", "application/json");
-  return res.status(201).json("aqui no hay nada");
+  const carritos= await manager.listCart()
+  return res.status(201).json({carritos});
 })
-router.post("/", (req, res) => {
+
+router.post("/", async(req, res) => {
   res.setHeader("Content-Type", "application/json");
 
-  const validacion = cartManager.CreateCart();
+  // const validacion = cartManager.CreateCart();
+  const validacion = manager.createCart()
   if (validacion) {
     return res.status(201).json("Carrito creado con exito");
   } else {
@@ -30,49 +39,37 @@ router.post("/", (req, res) => {
 });
 
 router.get("/:cid", async (req, res) => {
-  productId = req.params.cid; // Obtén el id del producto de req.params
+  const productId = req.params.cid; // Obtén el id del producto de req.params
   res.setHeader("Content-Type", "application/json");
-  let resultado;
 
-  if ((productId != "") | (productId != undefined)) {
-    productId = parseInt(productId);
-  }else{
-    return res.status(400).json({ error: "Ingrese un id" });
-  }
-
-  // Filtra el resultado por productId si es numerico
-  if (!isNaN(productId)) {
-    resultado = await cartManager.getCartId(productId);
-    if (!resultado) {
+    const {status,carrito} = await manager.cartId(productId);
+    if (status==200) {
+      return res.status(200).json({ carrito });
+    
+    }else if(status==400){
       return res.status(400).json({ error: "No se encontro el id" });
+    }else{
+      return res.status(500).json({ error: "Hubo un error" });
     }
-  } else {
-    return res.status(400).json({ error: "El id no es numerico" });
-  }
-
-  // Envía la respuesta como JSON
-
-  resultado = resultado.productos;
-  return res.status(200).json({ resultado });
+  
 });
 
 router.post("/:cid/product/:pid", async (req, res) => {
     res.setHeader("Content-Type", "application/json");
-  productId = req.params.pid; // Obtén el id del producto de req.params
-  cartId = req.params.cid; // Obtén el id del producto de req.params
-  if (
-    (productId != "") | (cartId != undefined) &&
-    (productId != "") | (cartId != undefined)
-  ) {
-    productId = parseInt(productId);
-    cartId = parseInt(cartId);
+  const productId = req.params.pid; // Obtén el id del producto de req.params
+  const cartId = req.params.cid; // Obtén el id del producto de req.params
+
+  const validacion = await managerProduct.ProductoId(productId)
+  if (validacion.status != 200) {
+    return res.status(400).json(validacion.error);
   }
-  const validacion = await cartManager.addProductToCart(cartId, productId);
-  console.log(validacion)
-  if (validacion == "El id del producto no se encuentra disponible") {
-    return res.status(400).json(validacion);
-    
-  }
-  return res.status(201).json(validacion);
+  let formProduct = {
+    idProducto: validacion.producto._id,
+    quantity: 1
+  };
+ 
+ 
+  const agregarProducto= await manager.addProductToCart(cartId,formProduct)
+  return res.status(200).json(agregarProducto);
 });
 export default router;
