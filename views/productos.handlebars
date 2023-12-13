@@ -1,0 +1,31 @@
+<a href="/">Volver</a>
+<input type="text" id="idcarrito" placeholder="Escriba id de carrito">
+<div id="productContainer">
+  {{#each productos}}
+    <div>
+      <p><b>id:</b>{{this._id}}</p>
+      <p><b>Titulo: </b>{{this.title}}</p>
+      <p>${{this.price}}</p>
+      <p><b>Descripcion: </b>{{this.description}}</p>
+      <p><b>Stock: </b>{{this.stock}}</p>
+      <p><b>Category: </b>{{this.category}}</p>
+      <img src="{{this.thumbnail}}" width="400px" alt="" />
+    </div>
+    <button data-id="{{this._id}}" class="btnEnviarId">Añadir al carrito</button>
+    <hr />
+  {{/each}}
+</div>
+<a href="?pagina=1">1.Pag</a>
+{{#if hasPrevPage}}
+  <a href="?pagina={{prevPage}}">pagina anterior</a>
+{{else}}
+  <span>pagina anterior</span>
+{{/if}}
+{{#if hasNextPage}}
+  <a href="?pagina={{nextPage}}">pagina siguiente</a>
+{{else}}
+  <span>pagina siguiente</span>
+{{/if}}
+<a href="?pagina={{totalPages}}">ultima pagina</a>
+
+<script src="js/productsToCart.js"></script>

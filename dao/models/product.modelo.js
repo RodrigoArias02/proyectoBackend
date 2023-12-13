@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 const productoSchema = new mongoose.Schema({
   title: {
@@ -33,7 +34,7 @@ const productoSchema = new mongoose.Schema({
     type: [String], // Puede ser un array de strings si hay múltiples thumbnails
   },
 });
-
+productoSchema.plugin(paginate)
 //Mismo nombre de coleccion
 const ProductoModelo = mongoose.model('productos', productoSchema);
 

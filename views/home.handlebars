@@ -1,11 +1,29 @@
 <h1>inicio</h1>
-<a href="/realtimeproducts"><h4>Agregar o eliminar productos</h4></a>
+<a href="/ingresarProductos"><h4>Agregar o eliminar productos</h4></a>
 <a href="/chat"><h4>Ir al chat</h4></a>
-
+<a href="/productos"><h4>Ver productos</h4></a>
+<a href="./?category=Comida">Filtar por comida</a>
+<a href="./?category=Electrodomesticos&pagina=1">Filtar por electrodomesticos</a>
+<br>
+<span>Orden:</span>
+<a href="/?direccion=asc{{#if categoria}}&category={{categoria}}{{/if}}{{#if pagina}}&pagina={{pagina}}{{/if}}">asc</a>
+<a href="/?direccion=desc{{#if categoria}}&category={{categoria}}{{/if}}{{#if pagina}}&pagina={{pagina}}{{/if}}">desc</a>
 <h3>Productos sin websocket</h3>
-{{#each productos}}
+{{#each playload}}
 <div>
     <h4>{{this.title}}</h4>
     <p>${{this.price}}</p>
 </div>
 {{/each}}
+<a href="?pagina=1{{#if categoria}}&category={{categoria}}{{/if}}{{#if direccion}}&direccion={{direccion}}{{/if}}">1.Pag</a>
+{{#if hasPrevPage}}
+  <a href="?pagina={{prevPage}}{{#if categoria}}&category={{categoria}}{{/if}}{{#if direccion}}&direccion={{direccion}}{{/if}}">Página anterior</a>
+{{else}}
+  <span>Página anterior</span>
+{{/if}}
+{{#if hasNextPage}}
+  <a href="?pagina={{nextPage}}{{#if categoria}}&category={{categoria}}{{/if}}{{#if direccion}}&direccion={{direccion}}{{/if}}">Página siguiente</a>
+{{else}}
+  <span>Página siguiente</span>
+{{/if}}
+<a href="?pagina={{totalPages}}{{#if categoria}}&category={{categoria}}{{/if}}{{#if direccion}}&direccion={{direccion}}{{/if}}">Última página</a>

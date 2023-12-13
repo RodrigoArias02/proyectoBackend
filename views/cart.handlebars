@@ -1,0 +1,17 @@
+<h2>Id carrito:</h2>
+
+<a href="/">Volver</a>
+<div id="productContainer">
+  {{#each productosCarritos}}
+    <div>
+      <p><b>id:</b>{{this._id}}</p>
+      <p><b>Titulo: </b>{{this.idProducto.title}}</p>
+      <p>${{this.idProducto.price}}</p>
+      <p><b>Descripcion: </b>{{this.idProducto.description}}</p>
+      <p><b>Stock: </b>{{this.idProducto.stock}}</p>
+      <p><b>Category: </b>{{this.idProducto.category}}</p>
+      <img src={{this.idProducto.thumbnail}} width="200px"  alt="" />
+    </div>
+    <hr />
+  {{/each}}
+</div>
